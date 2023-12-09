@@ -68,7 +68,7 @@ const getsubMenuIconStyle = computed((): CSSProperties => {
 const getSubTextStyle = computed((): CSSProperties => {
   if (!isCollapse.value) {
     return {
-      width: "210px",
+      width: "220px",
       display: "inline-block",
       overflow: "hidden",
       textOverflow: "ellipsis"

@@ -1,5 +1,5 @@
 {
-  "Version": "4.5.0",
+  "Version": "1.0.0",
   "Title": "HuangAdmin",
   "FixedHeader": true,
   "HiddenSideBar": false,
@@ -17,7 +17,7 @@
   "ShowLogo": true,
   "ShowModel": "smart",
   "MenuArrowIconNoTransition": true,
-  "CachingAsyncRoutes": false,
+  "CachingAsyncRoutes": true,
   "TooltipEffect": "light",
   "ResponsiveStorageNameSpace": "responsive-"
 }

@@ -40,7 +40,7 @@ const { title } = useNav();
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 48px;
+  height: 90px;
   overflow: hidden;
 
   .sidebar-logo-link {

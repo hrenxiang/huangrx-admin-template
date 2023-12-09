@@ -29,6 +29,9 @@ menus:
   hsfourZeroFour: "404"
   hsfourZeroOne: "403"
   hsFive: "500"
+  hsSystemManage: 系统管理
+  hsSystemUserManage: 用户管理
+  hsSystemDeptManage: 部门管理
   permission: 权限管理
   permissionPage: 页面权限
   permissionButton: 按钮权限

@@ -46,13 +46,20 @@ import { Auth } from "@/components/ReAuth";
 app.component("Auth", Auth);
 
 getServerConfig(app).then(async config => {
+  // app.use(router);
+  // await router.isReady();
+  // injectResponsiveStorage(app, config);
+  // setupStore(app);
+  // app.use(MotionPlugin).use(useI18n).use(ElementPlus);
+  // // .use(useEcharts);
+  // // .use(Table);
+  // // .use(PureDescriptions);
+  // app.mount("#app");
+
+  setupStore(app);
   app.use(router);
   await router.isReady();
   injectResponsiveStorage(app, config);
-  setupStore(app);
   app.use(MotionPlugin).use(useI18n).use(ElementPlus);
-  // .use(useEcharts);
-  // .use(Table);
-  // .use(PureDescriptions);
   app.mount("#app");
 });

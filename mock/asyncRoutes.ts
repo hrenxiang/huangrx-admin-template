@@ -12,7 +12,7 @@ const permissionRouter = {
   meta: {
     title: "menus.permission",
     icon: "lollipop",
-    rank: 10
+    rank: 1
   },
   children: [
     {

@@ -2,25 +2,28 @@ import { $t } from "@/plugins/i18n";
 
 export default {
   path: "/system",
+  redirect: "/system/user/index",
   meta: {
+    icon: "setting",
     title: $t("menus.hsSystemManage"),
-    icon: "lollipop",
     rank: 10
   },
   children: [
     {
       path: "/system/user/index",
-      name: "user",
+      name: "User",
       component: () => import("@/views/system/user/index.vue"),
       meta: {
+        icon: "flUser",
         title: $t("menus.hsSystemUserManage")
       }
     },
     {
       path: "/system/dept/index",
-      name: "dept",
+      name: "Dept",
       component: () => import("@/views/system/dept/index.vue"),
       meta: {
+        icon: "dept",
         title: $t("menus.hsSystemDeptManage")
       }
     }

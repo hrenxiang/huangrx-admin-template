@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineOptions({
-  name: "dept"
+  name: "Dept"
 });
 </script>
 

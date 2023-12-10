@@ -8,7 +8,13 @@ import { addIcon } from "@iconify/vue/dist/offline";
 import HomeFilled from "@iconify-icons/ep/home-filled";
 import InformationLine from "@iconify-icons/ri/information-line";
 import Lollipop from "@iconify-icons/ep/lollipop";
+import Setting from "@iconify-icons/ri/settings-3-line";
+import Dept from "@iconify-icons/ri/git-branch-line";
+import FlUser from "@iconify-icons/ri/admin-line";
 
 addIcon("homeFilled", HomeFilled);
 addIcon("informationLine", InformationLine);
 addIcon("lollipop", Lollipop);
+addIcon("setting", Setting);
+addIcon("dept", Dept);
+addIcon("flUser", FlUser);

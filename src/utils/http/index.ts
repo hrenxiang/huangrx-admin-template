@@ -152,6 +152,7 @@ class PureHttp {
     param?: AxiosRequestConfig,
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
+    url = baseUrlApi(url);
     const config = {
       method,
       url,
@@ -190,5 +191,7 @@ class PureHttp {
     return this.request<P>("get", url, params, config);
   }
 }
+
+export const baseUrlApi = (url: string) => `/api/${url}`;
 
 export const http = new PureHttp();

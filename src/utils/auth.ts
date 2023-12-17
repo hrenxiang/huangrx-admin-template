@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { storageSession } from "@pureadmin/utils";
 import { useUserStoreHook } from "@/store/modules/user";
+import { UserResult } from "@/api/user";
 
 export interface DataInfo<T> {
   /** token */
@@ -32,12 +33,11 @@ export function getToken(): DataInfo<number> {
  * 将`accessToken`、`expires`这两条信息放在key值为authorized-token的cookie里（过期自动销毁）
  * 将`username`、`roles`、`refreshToken`、`expires`这四条信息放在key值为`user-info`的sessionStorage里（浏览器关闭自动销毁）
  */
-export function setToken(data: DataInfo<Date>) {
+export function setToken(data: UserResult) {
   let expires = 0;
-  const { accessToken, refreshToken } = data;
-  expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
-  const cookieString = JSON.stringify({ accessToken, expires });
-
+  const { accessToken, refreshToken, expire } = data.token;
+  expires = new Date(expire).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  const cookieString = JSON.stringify({ accessToken, refreshToken, expires });
   expires > 0
     ? Cookies.set(TokenKey, cookieString, {
         expires: (expires - Date.now()) / 86400000
@@ -55,15 +55,15 @@ export function setToken(data: DataInfo<Date>) {
     });
   }
 
-  if (data.username && data.roles) {
-    const { username, roles } = data;
-    setSessionKey(username, roles);
+  const { userInfo, permissions } = data.user;
+  if (userInfo.username && permissions) {
+    setSessionKey(userInfo.username, permissions);
   } else {
     const username =
       storageSession().getItem<DataInfo<number>>(sessionKey)?.username ?? "";
-    const roles =
+    const permissions =
       storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
-    setSessionKey(username, roles);
+    setSessionKey(username, permissions);
   }
 }
 

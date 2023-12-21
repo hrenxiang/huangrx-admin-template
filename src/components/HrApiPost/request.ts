@@ -1,21 +1,18 @@
-import Axios, {
-  AxiosInstance,
-  AxiosRequestConfig,
-  CustomParamsSerializer
-} from "axios";
 import {
   PureHttpError,
   PureHttpRequestConfig,
   PureHttpResponse,
   RequestMethods
-} from "./types.d";
+} from "@/utils/http/types";
+import Axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  CustomParamsSerializer
+} from "axios";
+import NProgress from "nprogress";
 import { stringify } from "qs";
-import NProgress from "../progress";
-import { formatToken, getToken } from "@/utils/auth";
-import { useUserStoreHook } from "@/store/modules/user";
-import { LoginTypeEnum } from "@/api/user";
+import { formatToken } from "@/utils/auth";
 
-// 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
   timeout: 10000,
@@ -30,7 +27,7 @@ const defaultConfig: AxiosRequestConfig = {
   }
 };
 
-class PureHttp {
+class HrApiPostHttp {
   constructor() {
     this.httpInterceptorsRequest();
     this.httpInterceptorsResponse();
@@ -51,7 +48,7 @@ class PureHttp {
   /** 重连原始请求 */
   private static retryOriginalRequest(config: PureHttpRequestConfig) {
     return new Promise(resolve => {
-      PureHttp.requests.push((token: string) => {
+      HrApiPostHttp.requests.push((token: string) => {
         config.headers["Authorization"] = formatToken(token);
         resolve(config);
       });
@@ -60,7 +57,7 @@ class PureHttp {
 
   /** 请求拦截 */
   private httpInterceptorsRequest(): void {
-    PureHttp.axiosInstance.interceptors.request.use(
+    HrApiPostHttp.axiosInstance.interceptors.request.use(
       async (config: PureHttpRequestConfig): Promise<any> => {
         // 开启进度条动画
         NProgress.start();
@@ -69,49 +66,13 @@ class PureHttp {
           config.beforeRequestCallback(config);
           return config;
         }
-        if (PureHttp.initConfig.beforeRequestCallback) {
-          PureHttp.initConfig.beforeRequestCallback(config);
+        if (HrApiPostHttp.initConfig.beforeRequestCallback) {
+          HrApiPostHttp.initConfig.beforeRequestCallback(config);
           return config;
         }
-        /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
-        const whiteList = ["/refreshToken", "/login"];
-        return whiteList.some(v => config.url.indexOf(v) > -1)
-          ? config
-          : new Promise(resolve => {
-              const data = getToken();
-              if (data) {
-                const now = new Date().getTime();
-                const expired = parseInt(data.expires) - now <= 0;
-                if (expired) {
-                  if (!PureHttp.isRefreshing) {
-                    PureHttp.isRefreshing = true;
-                    // token过期刷新
-                    useUserStoreHook()
-                      .handRefreshToken({
-                        refreshToken: data.refreshToken,
-                        loginType: LoginTypeEnum.REFRESH_TOKEN
-                      })
-                      .then(res => {
-                        const token = res.token.accessToken;
-                        config.headers["Authorization"] = formatToken(token);
-                        PureHttp.requests.forEach(cb => cb(token));
-                        PureHttp.requests = [];
-                      })
-                      .finally(() => {
-                        PureHttp.isRefreshing = false;
-                      });
-                  }
-                  resolve(PureHttp.retryOriginalRequest(config));
-                } else {
-                  config.headers["Authorization"] = formatToken(
-                    data.accessToken
-                  );
-                  resolve(config);
-                }
-              } else {
-                resolve(config);
-              }
-            });
+        return new Promise(resolve => {
+          resolve(config);
+        });
       },
       error => {
         return Promise.reject(error);
@@ -121,7 +82,7 @@ class PureHttp {
 
   /** 响应拦截 */
   private httpInterceptorsResponse(): void {
-    const instance = PureHttp.axiosInstance;
+    const instance = HrApiPostHttp.axiosInstance;
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
         const $config = response.config;
@@ -132,8 +93,8 @@ class PureHttp {
           $config.beforeResponseCallback(response);
           return response.data;
         }
-        if (PureHttp.initConfig.beforeResponseCallback) {
-          PureHttp.initConfig.beforeResponseCallback(response);
+        if (HrApiPostHttp.initConfig.beforeResponseCallback) {
+          HrApiPostHttp.initConfig.beforeResponseCallback(response);
           return response.data;
         }
         return response.data;
@@ -149,14 +110,12 @@ class PureHttp {
     );
   }
 
-  /** 通用请求工具函数 */
   public request<T>(
     method: RequestMethods,
     url: string,
     param?: AxiosRequestConfig,
     axiosConfig?: PureHttpRequestConfig
   ): Promise<T> {
-    url = baseUrlApi(url);
     const config = {
       method,
       url,
@@ -166,9 +125,9 @@ class PureHttp {
 
     // 单独处理自定义请求/响应回调
     return new Promise((resolve, reject) => {
-      PureHttp.axiosInstance
+      HrApiPostHttp.axiosInstance
         .request(config)
-        .then((response: undefined) => {
+        .then((response: any) => {
           resolve(response);
         })
         .catch(error => {
@@ -176,26 +135,6 @@ class PureHttp {
         });
     });
   }
-
-  /** 单独抽离的post工具函数 */
-  public post<T, P>(
-    url: string,
-    params?: AxiosRequestConfig<T>,
-    config?: PureHttpRequestConfig
-  ): Promise<P> {
-    return this.request<P>("post", url, params, config);
-  }
-
-  /** 单独抽离的get工具函数 */
-  public get<T, P>(
-    url: string,
-    params?: AxiosRequestConfig<T>,
-    config?: PureHttpRequestConfig
-  ): Promise<P> {
-    return this.request<P>("get", url, params, config);
-  }
 }
 
-export const baseUrlApi = (url: string) => `/api/${url}`;
-
-export const http = new PureHttp();
+export const apiPostHttp = new HrApiPostHttp();

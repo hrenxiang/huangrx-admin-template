@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import HrApiPost from "@/components/HrApiPost/index.vue";
+
 defineOptions({
   name: "Dept"
 });
@@ -6,7 +8,7 @@ defineOptions({
 
 <template>
   <div class="dept-container">
-    21312312321321111111111111111111111111111111111
+    <hr-api-post />
   </div>
 </template>
 

@@ -13,6 +13,7 @@ import {
 import { UserResult, RefreshTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { type DataInfo, setToken, removeToken, sessionKey } from "@/utils/auth";
+import { message } from "@/utils/message";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -67,6 +68,8 @@ export const useUserStore = defineStore({
             }
           })
           .catch(error => {
+            useUserStoreHook().logOut();
+            message("登录已过期，请重新登录~", { type: "success" });
             reject(error);
           });
       });

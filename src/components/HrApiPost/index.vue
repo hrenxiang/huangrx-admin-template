@@ -1,33 +1,93 @@
 <template>
-  <div class="api-tester">
-    <div style="margin-top: 15px">
+  <div class="api-post-container">
+    <div class="api-post-one">
       <el-input
         placeholder="请输入内容"
         type="text"
         v-model="url"
-        class="input-with-select"
+        class="api-input-with-select"
       >
         <template #prepend>
-          <el-select v-model="requestType" placeholder="请选择">
+          <el-select
+            v-model="requestType"
+            placeholder="请选择"
+            class="api-post-one__select"
+          >
             <el-option label="GET" value="get" />
             <el-option label="POST" value="post" />
             <el-option label="DELETE" value="delete" />
           </el-select>
         </template>
       </el-input>
+      <el-button
+        class="api-post-one__button"
+        type="primary"
+        @click="sendRequest"
+        >发送</el-button
+      >
     </div>
 
-    <div class="request-inputs">
-      <button @click="sendRequest">发送</button>
+    <div class="api-post-two">
+      <el-menu
+        :default-active="activeIndex"
+        class="el-menu-demo"
+        mode="horizontal"
+        @select="handleSelect"
+      >
+        <el-menu-item index="1">Params</el-menu-item>
+        <el-menu-item index="2">Body</el-menu-item>
+        <el-menu-item index="3">Cookie</el-menu-item>
+        <el-menu-item index="4">Header</el-menu-item>
+        <el-menu-item index="5">Auth</el-menu-item>
+      </el-menu>
     </div>
 
-    <div class="response-display">
-      <div v-if="response" class="response-json">
-        <pre>{{ response }}</pre>
+    <div class="api-post-three">
+      <div v-if="activeIndex === '1'">
+        <el-descriptions title="请求参数" />
+        <el-table :data="tableData" stripe style="width: 100%">
+          <el-table-column prop="date" label="参数名" />
+          <el-table-column prop="name" label="类型" />
+          <el-table-column prop="address" label="示例值" />
+          <el-table-column prop="address" label="说明" />
+        </el-table>
       </div>
-      <div v-if="error" class="error-message">
-        <pre>{{ error }}</pre>
+      <div v-if="activeIndex === '2'">Body Panel</div>
+      <div v-if="activeIndex === '3'">
+        <el-table :data="tableData" stripe style="width: 100%">
+          <el-table-column prop="date" label="参数名" />
+          <el-table-column prop="name" label="类型" />
+          <el-table-column prop="address" label="示例值" />
+          <el-table-column prop="address" label="说明" />
+        </el-table>
       </div>
+      <div v-if="activeIndex === '4'">
+        <el-table :data="tableData" stripe style="width: 100%">
+          <el-table-column prop="date" label="参数名" />
+          <el-table-column prop="name" label="类型" />
+          <el-table-column prop="address" label="示例值" />
+          <el-table-column prop="address" label="说明" />
+        </el-table>
+      </div>
+      <div v-if="activeIndex === '5'">
+        <el-descriptions>
+          <el-descriptions-item label="类型">
+            <el-select v-model="value" placeholder="Select">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+
+    <div class="api-post-four">
+      <el-descriptions title="响应示例" />
+      <json-viewer :value="response" :expand-depth="1" copyable boxed sort />
     </div>
   </div>
 </template>
@@ -37,10 +97,42 @@ import { ref } from "vue";
 import { apiPostHttp } from "@/components/HrApiPost/request";
 import { RequestMethods } from "@/utils/http/types";
 
+const activeIndex = ref<string>("1");
+const tableData = ref<any>([
+  {
+    date: "2016-05-03",
+    name: "Tom",
+    address: "No. 189, Grove St, Los Angeles"
+  }
+]);
+const options = [
+  {
+    value: "Option2",
+    label: "No Auth"
+  },
+  {
+    value: "Option3",
+    label: "Api Key"
+  },
+  {
+    value: "Option4",
+    label: "Bearer Token"
+  },
+  {
+    value: "Option5",
+    label: "Basic Auth"
+  }
+];
+const value = ref(options[0].value);
+
 const url = ref<string>("");
 const requestType = ref<RequestMethods>("get");
 const response = ref(null);
 const error = ref(null);
+
+const handleSelect = key => {
+  activeIndex.value = key;
+};
 
 const sendRequest = async () => {
   try {
@@ -59,69 +151,77 @@ const sendRequest = async () => {
 </script>
 
 <style lang="scss" scoped>
-.api-tester {
-  max-width: 800px;
-  padding: 20px;
-  margin: 0 auto;
-  font-family: Arial, sans-serif;
-}
+$api-one-min-height: 40px;
 
-.request-inputs {
+.api-post-container {
   display: flex;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  min-height: calc(100vh - 175px);
+  padding: 20px;
+  font-family: PingFang-Regular, sans-serif;
+  background-color: #fff;
+  border-radius: 10px;
 }
 
-.request-inputs select,
-.request-inputs input,
-.request-inputs button {
-  padding: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.api-post-one {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
 }
 
-.request-inputs button {
-  color: white;
-  cursor: pointer;
-  background-color: #28a745;
-  border-color: #28a745;
+.api-input-with-select {
+  min-height: $api-one-min-height;
 }
 
-.request-inputs button:hover {
-  background-color: #218838;
+.api-post-one__select {
+  min-height: $api-one-min-height;
+  border-radius: 6px;
 }
 
-.response-display {
+::v-deep(.api-post-one__select) .el-input--suffix {
+  max-width: 100px;
+  min-height: $api-one-min-height;
+}
+
+.api-post-one__button {
+  max-width: 72px;
+  min-height: $api-one-min-height;
+  padding: 4px 15px;
+  border-radius: 6px;
+}
+
+::v-deep(.api-post-two) .el-menu-item {
+  max-height: $api-one-min-height;
+  font-family: PingFang-Medium, sans-serif;
+}
+
+.api-post-three {
+  min-height: 10vh;
+}
+
+.api-post-four__response {
   position: relative;
   padding: 20px;
-  background-color: #f5f5f5;
   border: 1px solid #ddd;
+  border-radius: 6px;
 }
 
-.response-json pre,
-.error-message pre {
+.api-post-four__json pre {
   padding: 10px;
   overflow-x: auto;
+  font-family: PingFang-Regular, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   white-space: pre-wrap;
-  background-color: #fff;
-  border: 1px solid #eee;
+  border-left: 2px solid #44d944;
 }
 
-.response-json {
-  background-color: #e2e2e2;
-  border-left: 5px solid #4caf50; /* Success color */
-}
-
-.error-message {
-  background-color: #e2e2e2;
-  border-left: 5px solid #f44336; /* Error color */
-}
-
-.el-select .el-input {
-  width: 130px;
-}
-
-.input-with-select .el-input-group__prepend {
-  background-color: #fff;
+::v-deep(.api-post-four) .jv-code {
+  min-height: 20vh !important;
 }
 </style>

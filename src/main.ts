@@ -22,6 +22,9 @@ import "element-plus/dist/index.css";
 // 导入字体图标
 import "./assets/iconfont/iconfont.js";
 import "./assets/iconfont/iconfont.css";
+// 导入Json编辑组件
+import JsonViewer from "vue3-json-viewer";
+import "vue3-json-viewer/dist/index.css";
 
 const app = createApp(App);
 
@@ -57,6 +60,7 @@ getServerConfig(app).then(async config => {
   // app.mount("#app");
 
   setupStore(app);
+  app.use(JsonViewer);
   app.use(router);
   await router.isReady();
   injectResponsiveStorage(app, config);

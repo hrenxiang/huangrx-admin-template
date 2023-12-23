@@ -3,6 +3,20 @@
 @import "./sidebar";
 @import "./dark";
 
+@font-face {
+  font-family: PingFang-Medium;
+  font-weight: 400;
+  src: url("../assets/font/pingfanghk-medium.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: PingFang-Regular;
+  font-weight: 400;
+  src: url("../assets/font/pingfanghk-regular.ttf");
+  font-display: swap;
+}
+
 /* 自定义全局 CssVar */
 :root {
   /* 左侧菜单展开、收起动画时长 */

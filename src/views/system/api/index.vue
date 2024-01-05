@@ -2,7 +2,7 @@
 import HrApiPost from "@/components/HrApiPost/index.vue";
 
 defineOptions({
-  name: "Dept"
+  name: "Api"
 });
 </script>
 

@@ -19,12 +19,12 @@ export default {
       }
     },
     {
-      path: "/system/dept/index",
-      name: "Dept",
-      component: () => import("@/views/system/dept/index.vue"),
+      path: "/system/api/index",
+      name: "Api",
+      component: () => import("@/views/system/api/index.vue"),
       meta: {
         icon: "dept",
-        title: $t("menus.hsSystemDeptManage")
+        title: $t("menus.hsSystemApiManage")
       }
     }
   ]

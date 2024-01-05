@@ -13,9 +13,12 @@
             placeholder="请选择"
             class="api-post-one__select"
           >
-            <el-option label="GET" value="get" />
-            <el-option label="POST" value="post" />
-            <el-option label="DELETE" value="delete" />
+            <el-option
+              v-for="method in methods"
+              :key="method.value"
+              :label="method.label"
+              :value="method.value"
+            />
           </el-select>
         </template>
       </el-input>
@@ -23,8 +26,8 @@
         class="api-post-one__button"
         type="primary"
         @click="sendRequest"
-        >发送</el-button
-      >
+        >发送
+      </el-button>
     </div>
 
     <div class="api-post-two">
@@ -45,30 +48,24 @@
     <div class="api-post-three">
       <div v-if="activeIndex === '1'">
         <el-descriptions title="请求参数" />
-        <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column prop="date" label="参数名" />
-          <el-table-column prop="name" label="类型" />
-          <el-table-column prop="address" label="示例值" />
-          <el-table-column prop="address" label="说明" />
+        <el-table :data="paramsData" stripe style="width: 100%">
+          <el-table-column v-for="col in ColumnList" :key="col.prop">
+            <template #header>
+              <p>{{ col.label }}</p>
+            </template>
+
+            <template #default="{ row }">
+              <el-input type="text" v-model="row[col.prop]" />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <el-button type="primary" @click="addParamsItem">添加</el-button>
+          </el-table-column>
         </el-table>
       </div>
       <div v-if="activeIndex === '2'">Body Panel</div>
-      <div v-if="activeIndex === '3'">
-        <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column prop="date" label="参数名" />
-          <el-table-column prop="name" label="类型" />
-          <el-table-column prop="address" label="示例值" />
-          <el-table-column prop="address" label="说明" />
-        </el-table>
-      </div>
-      <div v-if="activeIndex === '4'">
-        <el-table :data="tableData" stripe style="width: 100%">
-          <el-table-column prop="date" label="参数名" />
-          <el-table-column prop="name" label="类型" />
-          <el-table-column prop="address" label="示例值" />
-          <el-table-column prop="address" label="说明" />
-        </el-table>
-      </div>
+      <div v-if="activeIndex === '3'" />
+      <div v-if="activeIndex === '4'" />
       <div v-if="activeIndex === '5'">
         <el-descriptions>
           <el-descriptions-item label="类型">
@@ -93,18 +90,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { apiPostHttp } from "@/components/HrApiPost/request";
 import { RequestMethods } from "@/utils/http/types";
+import { ColumnList, requestMethods } from "@/components/HrApiPost/type";
 
+// Part1 对应方法
+const methods = ref();
+// Part2 激活选项
 const activeIndex = ref<string>("1");
-const tableData = ref<any>([
+// Part3 Params
+const paramsData = ref<any>([
   {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles"
+    name: null,
+    type: null,
+    value: null,
+    desc: null
   }
 ]);
+
+onMounted(() => {
+  // 这里放置组件挂载后需要执行的逻辑
+  methods.value = requestMethods();
+});
+
+function addParamsItem() {
+  paramsData.value.push({
+    name: null,
+    type: null,
+    value: null,
+    desc: null
+  });
+  console.log(paramsData.value);
+}
+
+const sendRequest = async () => {
+  try {
+    response.value = null;
+    error.value = null;
+
+    apiPostHttp.request(requestType.value, url.value).then(res => {
+      if (res) {
+        response.value = res;
+      }
+    });
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
 const options = [
   {
     value: "Option2",
@@ -127,26 +161,11 @@ const value = ref(options[0].value);
 
 const url = ref<string>("");
 const requestType = ref<RequestMethods>("get");
-const response = ref(null);
+const response = ref({});
 const error = ref(null);
 
 const handleSelect = key => {
   activeIndex.value = key;
-};
-
-const sendRequest = async () => {
-  try {
-    response.value = null;
-    error.value = null;
-
-    apiPostHttp.request(requestType.value, url.value).then(res => {
-      if (res) {
-        response.value = res;
-      }
-    });
-  } catch (err) {
-    error.value = err.message;
-  }
 };
 </script>
 
@@ -184,7 +203,7 @@ $api-one-min-height: 40px;
 }
 
 ::v-deep(.api-post-one__select) .el-input--suffix {
-  max-width: 100px;
+  max-width: 108px;
   min-height: $api-one-min-height;
 }
 

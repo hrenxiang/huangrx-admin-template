@@ -31,7 +31,7 @@ menus:
   hsFive: "500"
   hsSystemManage: "System Manage"
   hsSystemUserManage: "User Manage"
-  hsSystemDeptManage: "Dept Manage"
+  hsSystemApiManage: "Api Manage"
   permission: Permission Manage
   permissionPage: Page Permission
   permissionButton: Button Permission
